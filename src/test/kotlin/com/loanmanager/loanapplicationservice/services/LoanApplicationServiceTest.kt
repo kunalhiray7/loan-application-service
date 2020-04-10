@@ -1,8 +1,8 @@
 package com.loanmanager.loanapplicationservice.services
 
-import com.loanmanager.loanapplicationservice.dtos.CustomerResponse
-import com.loanmanager.loanapplicationservice.dtos.LoanApplicationRequestDto
-import com.loanmanager.loanapplicationservice.dtos.LoanApplicationResponse
+import com.loanmanager.loanapplicationservice.domain.LoanApplication
+import com.loanmanager.loanapplicationservice.domain.LoanApplicationStatus
+import com.loanmanager.loanapplicationservice.dtos.*
 import com.loanmanager.loanapplicationservice.exceptions.CustomerNotFoundException
 import com.loanmanager.loanapplicationservice.repositories.LoanApplicationRepository
 import org.junit.jupiter.api.Assertions.*
@@ -68,5 +68,77 @@ class LoanApplicationServiceTest {
         assertEquals("No customer found for given id $customerId", result.message)
         verify(customerService, times(1)).getById(customerId)
         verifyNoMoreInteractions(loanApplicationRepository)
+    }
+
+    @Test
+    fun `getForCustomer() should return the loan response for the customer`() {
+        val customerId = 123L
+        val customer = CustomerResponse(
+                id = customerId,
+                userId = 123L,
+                firstName = "John",
+                lastName = "Smith",
+                email = "johnsmith@example.com",
+                phone = "+49 1234567890"
+        )
+        val loanApplication1 = LoanApplication(
+                id = 234L,
+                customerId = customerId,
+                amount = 1115.0,
+                duration = 12,
+                status = LoanApplicationStatus.APPLIED
+        )
+        val loanApplication2 = LoanApplication(
+                id = 567L,
+                customerId = customerId,
+                amount = 3000.0,
+                duration = 24,
+                status = LoanApplicationStatus.DENIED
+        )
+        val customerDto = CustomerDto.of(customer)
+        val loan1 = LoanDto.of(loanApplication1)
+        val loan2 = LoanDto.of(loanApplication2)
+        val loanResponse = LoanResponse(customer = customerDto, loans = listOf(loan1, loan2))
+        doReturn(customer).`when`(customerService).getById(customerId)
+        doReturn(listOf(loanApplication1, loanApplication2)).`when`(loanApplicationRepository).findByCustomerId(customerId)
+
+        val result = loanApplicationService.getForCustomer(customerId)
+
+        assertEquals(loanResponse, result)
+        verify(customerService, times(1)).getById(customerId)
+        verify(loanApplicationRepository, times(1)).findByCustomerId(customerId)
+    }
+
+    @Test
+    fun `getForCustomer() should throw CustomerNotFoundException when no customer found for give customerId`() {
+        val customerId = 123L
+        doReturn(null).`when`(customerService).getById(customerId)
+
+        val result = assertThrows<CustomerNotFoundException> { loanApplicationService.getForCustomer(customerId) }
+
+        assertEquals("No customer found for given id $customerId", result.message)
+        verify(customerService, times(1)).getById(customerId)
+        verifyNoMoreInteractions(loanApplicationRepository)
+    }
+
+    @Test
+    fun `getForCustomer() should return null if no loan application found for given customer`() {
+        val customerId = 123L
+        val customer = CustomerResponse(
+                id = customerId,
+                userId = 123L,
+                firstName = "John",
+                lastName = "Smith",
+                email = "johnsmith@example.com",
+                phone = "+49 1234567890"
+        )
+        doReturn(customer).`when`(customerService).getById(customerId)
+        doReturn(emptyList<LoanApplication>()).`when`(loanApplicationRepository).findByCustomerId(customerId)
+
+        val result = loanApplicationService.getForCustomer(customerId)
+
+        assertEquals(null, result)
+        verify(customerService, times(1)).getById(customerId)
+        verify(loanApplicationRepository, times(1)).findByCustomerId(customerId)
     }
 }

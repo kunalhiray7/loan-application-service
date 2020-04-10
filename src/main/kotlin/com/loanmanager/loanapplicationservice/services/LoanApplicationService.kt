@@ -1,8 +1,6 @@
 package com.loanmanager.loanapplicationservice.services
 
-import com.loanmanager.loanapplicationservice.dtos.LoanApplicationRequestDto
-import com.loanmanager.loanapplicationservice.dtos.LoanApplicationResponse
-import com.loanmanager.loanapplicationservice.dtos.LoanResponse
+import com.loanmanager.loanapplicationservice.dtos.*
 import com.loanmanager.loanapplicationservice.exceptions.CustomerNotFoundException
 import com.loanmanager.loanapplicationservice.repositories.LoanApplicationRepository
 import org.slf4j.LoggerFactory
@@ -32,7 +30,18 @@ class LoanApplicationService(private val loanApplicationRepository: LoanApplicat
 
     @Throws(CustomerNotFoundException::class)
     fun getForCustomer(customerId: Long): LoanResponse? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val customer = customerService.getById(customerId)
+                ?: throw CustomerNotFoundException("No customer found for given id $customerId")
+        val loanApplications = loanApplicationRepository.findByCustomerId(customerId)
+
+        return if(loanApplications.isEmpty()) {
+            null
+        } else {
+            LoanResponse(
+                    customer = CustomerDto.of(customer),
+                    loans = loanApplications.map { LoanDto.of(it) }
+            )
+        }
     }
 
 }

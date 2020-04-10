@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface LoanApplicationRepository: JpaRepository<LoanApplication, Long>
+interface LoanApplicationRepository: JpaRepository<LoanApplication, Long> {
+    fun findByCustomerId(customerId: Long): List<LoanApplication>
+}
