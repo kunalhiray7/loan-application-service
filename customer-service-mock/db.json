@@ -1,0 +1,20 @@
+{
+  "customers": [
+    {
+      "id": 1,
+      "userId": 1,
+      "firstName": "John",
+      "lastName": "Smith",
+      "email": "johnsmith@example.com",
+      "phone": "+49 123 456 78 910"
+    },
+    {
+      "id": 2,
+      "userId": 2,
+      "firstName": "Jack",
+      "lastName": "Smith",
+      "email": "jacksmith@example.com",
+      "phone": "+49 123 456 78 456"
+    }
+  ]
+}
