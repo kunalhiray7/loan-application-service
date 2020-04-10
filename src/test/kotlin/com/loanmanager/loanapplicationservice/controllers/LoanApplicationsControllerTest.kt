@@ -1,7 +1,7 @@
 package com.loanmanager.loanapplicationservice.controllers
 
-import com.loanmanager.loanapplicationservice.dtos.LoanApplicationRequestDto
-import com.loanmanager.loanapplicationservice.dtos.LoanApplicationResponse
+import com.loanmanager.loanapplicationservice.domain.LoanApplicationStatus
+import com.loanmanager.loanapplicationservice.dtos.*
 import com.loanmanager.loanapplicationservice.exceptions.CustomerNotFoundException
 import com.loanmanager.loanapplicationservice.services.LoanApplicationService
 import com.loanmanager.loanapplicationservice.utils.ObjectMapperUtil
@@ -14,7 +14,10 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
 @SpringBootTest
@@ -86,5 +89,42 @@ class LoanApplicationsControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest)
 
         verifyNoMoreInteractions(loanApplicationService)
+    }
+
+    @Test
+    fun `GET should return the loan applications for given customer`() {
+        val customerId = 123L
+        val customer = CustomerDto(id = customerId, firstName = "John", lastName = "Smith")
+        val loan = LoanDto(id = 234L, amount = 1115.00, duration = 12, status = LoanApplicationStatus.APPLIED)
+        val loanResponse = LoanResponse(customer = customer, loans = listOf(loan))
+        doReturn(loanResponse).`when`(loanApplicationService).getForCustomer(customerId = customerId)
+
+        mockMvc.perform(get("/api/loanapplications").param("customerId", customerId.toString()))
+                .andExpect(status().isOk)
+                .andExpect(content().string(mapper.writeValueAsString(loanResponse)))
+
+        verify(loanApplicationService, times(1)).getForCustomer(customerId)
+    }
+
+    @Test
+    fun `GET should return NOT_FOUND when no customer found for given customerId`() {
+        val customerId = 123L
+        doThrow(CustomerNotFoundException("No customer found")).`when`(loanApplicationService).getForCustomer(customerId = customerId)
+
+        mockMvc.perform(get("/api/loanapplications").param("customerId", customerId.toString()))
+                .andExpect(status().isNotFound)
+
+        verify(loanApplicationService, times(1)).getForCustomer(customerId)
+    }
+
+    @Test
+    fun `GET should return NO_CONTENT when no loan application found for given customer`() {
+        val customerId = 123L
+        doReturn(null).`when`(loanApplicationService).getForCustomer(customerId = customerId)
+
+        mockMvc.perform(get("/api/loanapplications").param("customerId", customerId.toString()))
+                .andExpect(status().isNoContent)
+
+        verify(loanApplicationService, times(1)).getForCustomer(customerId)
     }
 }

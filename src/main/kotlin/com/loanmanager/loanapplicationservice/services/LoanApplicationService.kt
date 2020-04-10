@@ -2,6 +2,7 @@ package com.loanmanager.loanapplicationservice.services
 
 import com.loanmanager.loanapplicationservice.dtos.LoanApplicationRequestDto
 import com.loanmanager.loanapplicationservice.dtos.LoanApplicationResponse
+import com.loanmanager.loanapplicationservice.dtos.LoanResponse
 import com.loanmanager.loanapplicationservice.exceptions.CustomerNotFoundException
 import com.loanmanager.loanapplicationservice.repositories.LoanApplicationRepository
 import org.slf4j.LoggerFactory
@@ -27,6 +28,11 @@ class LoanApplicationService(private val loanApplicationRepository: LoanApplicat
 
         logger.info("Loan application is saved successfully for customer: $customerId")
         return LoanApplicationResponse(id = loanApplication.id!!)
+    }
+
+    @Throws(CustomerNotFoundException::class)
+    fun getForCustomer(customerId: Long): LoanResponse? {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
 }
