@@ -25,6 +25,17 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
+	implementation("io.springfox:springfox-swagger-ui:2.9.2")
+	implementation("io.springfox:springfox-swagger2:2.9.2")
+
+	implementation("io.github.openfeign:feign-okhttp:9.3.1")
+	implementation("io.github.openfeign:feign-jackson:9.3.1")
+	implementation("io.github.openfeign:feign-slf4j:9.3.1")
+
+	implementation("ch.qos.logback:logback-core:1.2.3")
+	implementation("ch.qos.logback:logback-classic:1.2.3")
+	implementation("net.logstash.logback:logstash-logback-encoder:4.11")
+
 	runtimeOnly("com.h2database:h2")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {

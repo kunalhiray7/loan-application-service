@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    url: jdbc:h2:file:./h2/db
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  h2:
+    console:
+      enabled: true
+      path: /h2_console
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+customer:
+  service:
+    url: http://localhost:8000
+
+logstash:
+  uri: 127.0.0.1:5044
