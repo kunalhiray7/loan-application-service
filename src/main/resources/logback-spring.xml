@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <springProperty name="logstash.uri" source="logstash.uri"/>
+    <springProperty name="spring.profiles.active" source="spring.profiles.active"/>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </layout>
+    </appender>
+    <logger name="com.loanmanager.loanapplicationservice.services.LoanApplicationService" level="DEBUG"/>
+
+    <springProfile name="qa">
+        <!-- Logstash-Configuration -->
+        <appender name="stash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+            <destination>${logstash.uri}</destination>
+            <!-- encoder is required -->
+            <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                <providers>
+                    <mdc/>
+                    <pattern>
+                        <pattern>
+                            {
+                            "timestamp": "%d{yyyy-MM-dd'T'HH:mm:ss.SSSZZ}",
+                            "message": "%message",
+                            "logger": "%logger",
+                            "thread": "%thread",
+                            "level": "%level",
+                            "host": "${HOSTNAME}",
+                            "env": "${spring.profiles.active}",
+                            "app": "loan-application-service"
+                            }
+                        </pattern>
+                    </pattern>
+                    <stackTrace>
+                        <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                            <maxDepthPerThrowable>full</maxDepthPerThrowable>
+                            <maxLength>full</maxLength>
+                            <shortenedClassNameLength>full</shortenedClassNameLength>
+                            <rootCauseFirst>true</rootCauseFirst>
+                        </throwableConverter>
+                    </stackTrace>
+                </providers>
+            </encoder>
+            <keepAliveDuration>5 minutes</keepAliveDuration>
+        </appender>
+
+        <root level="INFO">
+            <appender-ref ref="stash"/>
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="local">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+</configuration>

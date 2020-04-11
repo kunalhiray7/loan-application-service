@@ -19,8 +19,7 @@ class LoanApplicationService(private val loanApplicationRepository: LoanApplicat
         val customerId = loanApplicationRequest.customerId
         logger.info("Loan application is being processed for customer: $customerId")
 
-        customerService.getById(customerId)
-                ?: throw CustomerNotFoundException("No customer found for given id $customerId")
+        getCustomerOrThrowNotFound(customerId)
 
         val loanApplication = loanApplicationRepository.save(loanApplicationRequest.mapToDomain())
 
@@ -30,8 +29,8 @@ class LoanApplicationService(private val loanApplicationRepository: LoanApplicat
 
     @Throws(CustomerNotFoundException::class)
     fun getForCustomer(customerId: Long): LoanResponse? {
-        val customer = customerService.getById(customerId)
-                ?: throw CustomerNotFoundException("No customer found for given id $customerId")
+        logger.info("Fetching loan applications for customer: $customerId")
+        val customer = getCustomerOrThrowNotFound(customerId)
         val loanApplications = loanApplicationRepository.findByCustomerId(customerId)
 
         return if(loanApplications.isEmpty()) {
@@ -43,5 +42,8 @@ class LoanApplicationService(private val loanApplicationRepository: LoanApplicat
             )
         }
     }
+
+    private fun getCustomerOrThrowNotFound(customerId: Long) = (customerService.getById(customerId)
+            ?: throw CustomerNotFoundException("No customer found for given id $customerId"))
 
 }
