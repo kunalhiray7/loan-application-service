@@ -15,6 +15,14 @@
       "lastName": "Smith",
       "email": "jacksmith@example.com",
       "phone": "+49 123 456 78 456"
+    },
+    {
+      "id": 3,
+      "userId": 3,
+      "firstName": "Steve",
+      "lastName": "Smith",
+      "email": "stevesmith@example.com",
+      "phone": "+49 123 456 78 284"
     }
   ]
 }
