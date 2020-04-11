@@ -1,0 +1,257 @@
+{
+	"info": {
+		"_postman_id": "2c9c9657-5619-40fb-80f0-7e1b20a4381c",
+		"name": "loan-application-service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "POST /api/loanapplications - Success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "01f58b55-2f85-4f1c-bec5-5c5a61bbfbba",
+						"exec": [
+							"pm.test(\"POST should create a loan application and return 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"POST loan application creation response should have ID\", function () {",
+							"    var jsonData = pm.response.text();",
+							"    pm.expect(jsonData).to.include(\"id\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\t\"customerId\" : 1,\r\t\"amount\" : 6000,\r\t\"duration\" : 36\r}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/loanapplications",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"loanapplications"
+					]
+				},
+				"description": "It should create the loan application for a given customer."
+			},
+			"response": []
+		},
+		{
+			"name": "POST /api/loanapplications?customerId={customerId} - NOT_FOUND",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6e50e858-41e1-4f5b-a5ba-3d4903864753",
+						"exec": [
+							"pm.test(\"POST loan applications by id should return 404 when no customer found\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"POST loan applications by id should have correct message when no customer found\", function () {",
+							"    var jsonData = pm.response.text();",
+							"    pm.expect(jsonData).to.include(\"No customer found for given id 123456\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\t\"customerId\" : 123456,\r\t\"amount\" : 6000,\r\t\"duration\" : 36\r}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/loanapplications",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"loanapplications"
+					]
+				},
+				"description": "It should return NOT_FOUND when no customer found for gievn id."
+			},
+			"response": []
+		},
+		{
+			"name": "GET /api/loanapplications?customerId={customerId} - Success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "aeee4768-5d76-47f3-a6e4-d4c322033e48",
+						"exec": [
+							"pm.test(\"GET loan applications by customer id should return 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"GET loan applications should return the loan application for the customer\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"loans\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/loanapplications?customerId=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"loanapplications"
+					],
+					"query": [
+						{
+							"key": "customerId",
+							"value": "1"
+						}
+					]
+				},
+				"description": "It should return the loan application for given customer id."
+			},
+			"response": []
+		},
+		{
+			"name": "GET /api/loanapplications?customerId={customerId} - NOT_FOUND",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8b62ea09-efde-4fe0-a308-68912fdca0ab",
+						"exec": [
+							"pm.test(\"GET loan applications by id should return 404 when no customer found\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"",
+							"pm.test(\"GET loan applications by id should have correct message when no customer found\", function () {",
+							"    var jsonData = pm.response.text();",
+							"    pm.expect(jsonData).to.include(\"No customer found for given id 123456\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/loanapplications?customerId=123456",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"loanapplications"
+					],
+					"query": [
+						{
+							"key": "customerId",
+							"value": "123456"
+						}
+					]
+				},
+				"description": "It should return NOT_FOUND when no customer found for the given id."
+			},
+			"response": []
+		},
+		{
+			"name": "GET /api/loanapplications?customerId={customerId} - NO_CONTENT",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "558a682d-a8c8-48ba-96d3-bf638ebc05ab",
+						"exec": [
+							"pm.test(\"GET loan applications by id should return 204 when no loan found for given customer\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/loanapplications?customerId=3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"loanapplications"
+					],
+					"query": [
+						{
+							"key": "customerId",
+							"value": "3"
+						}
+					]
+				},
+				"description": "It should return NO_CONTENT when no loan application found for given customer id."
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
